@@ -1,8 +1,11 @@
 /* MD4.H - header file for MD4C.C
- * $FreeBSD: src/lib/libmd/md4.h,v 1.11 2006/01/17 15:35:56 phk Exp $
+ * $FreeBSD$
  */
 
-/* Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All
+/*-
+   SPDX-License-Identifier: RSA-MD
+
+   Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All
    rights reserved.
 
    License to copy and use this software is granted provided that it
@@ -26,28 +29,29 @@
 #ifndef _MD4_H_
 #define _MD4_H_
 
-#ifdef __APPLE__
-#define COMMON_DIGEST_FOR_OPENSSL
 #include <CommonCrypto/CommonDigest.h>
-#else /* !__APPLE__ */
-/* MD4 context. */
-typedef struct MD4Context {
-  u_int32_t state[4];	/* state (ABCD) */
-  u_int32_t count[2];	/* number of bits, modulo 2^64 (lsb first) */
-  unsigned char buffer[64];	/* input buffer */
-} MD4_CTX;
-#endif /* __APPLE__ */
+
+#define MD4_CTX	CC_MD4_CTX
 
 #include <sys/cdefs.h>
+#include <sys/types.h>
+
+#define MD4Init(c)		CC_MD4_Init(c)
+#define	MD4Update(c, d, l)	CC_MD4_Update(c, d, l)
+#define MD4Final(c, d)		CC_MD4_Final(c, d)
 
 __BEGIN_DECLS
-void   MD4Init(MD4_CTX *);
-void   MD4Update(MD4_CTX *, const void *, unsigned int);
 #ifndef __APPLE__
+/*
+ * Pad() is not implemented by CommonCrypto and likely legacy that we don't need
+ * to carry forth.  Comment it out for now, we can revisit it if we really find
+ * a compelling need.
+ */
 void   MD4Pad(MD4_CTX *);
-#endif /* !__APPLE__ */
-void   MD4Final(unsigned char [16], MD4_CTX *);
+#endif
 char * MD4End(MD4_CTX *, char *);
+char * MD4Fd(int, char *);
+char * MD4FdChunk(int, char *, off_t, off_t);
 char * MD4File(const char *, char *);
 char * MD4FileChunk(const char *, char *, off_t, off_t);
 char * MD4Data(const void *, unsigned int, char *);

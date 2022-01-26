@@ -23,35 +23,34 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $FreeBSD: src/lib/libmd/sha256.h,v 1.2 2006/01/17 15:35:56 phk Exp $
+ * $FreeBSD$
  */
 
 #ifndef _SHA256_H_
 #define _SHA256_H_
 
+#include <CommonCrypto/CommonDigest.h>
+
+#define SHA256_BLOCK_LENGTH		CC_SHA256_BLOCK_BYTES
+#define SHA256_DIGEST_LENGTH		CC_SHA256_DIGEST_LENGTH
+#define SHA256_DIGEST_STRING_LENGTH	(SHA256_DIGEST_LENGTH * 2 + 1)
+
+#define	SHA256_CTX	CC_SHA256_CTX
+
+#include <sys/cdefs.h>
 #include <sys/types.h>
 
-#ifdef __APPLE__
-#define COMMON_DIGEST_FOR_OPENSSL
-#include <CommonCrypto/CommonDigest.h>
-#else /* !__APPLE__ */
-typedef struct SHA256Context {
-	uint32_t state[8];
-	uint32_t count[2];
-	unsigned char buf[64];
-} SHA256_CTX;
-#endif /* __APPLE__ */
+#define SHA256_Init(c)		CC_SHA256_Init(c)
+#define SHA256_Update(c, d, l)	CC_SHA256_Update(c, d, l)
+#define SHA256_Final(d, c)	CC_SHA256_Final(d, c)
 
 __BEGIN_DECLS
-#ifndef __APPLE__
-void	SHA256_Init(SHA256_CTX *);
-void	SHA256_Update(SHA256_CTX *, const void *, size_t);
-void	SHA256_Final(unsigned char [32], SHA256_CTX *);
-#endif /* !__APPLE__ */
 char   *SHA256_End(SHA256_CTX *, char *);
+char   *SHA256_Data(const void *, unsigned int, char *);
+char   *SHA256_Fd(int, char *);
+char   *SHA256_FdChunk(int, char *, off_t, off_t);
 char   *SHA256_File(const char *, char *);
 char   *SHA256_FileChunk(const char *, char *, off_t, off_t);
-char   *SHA256_Data(const void *, unsigned int, char *);
 __END_DECLS
 
 #endif /* !_SHA256_H_ */

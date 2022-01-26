@@ -1,4 +1,4 @@
-/* crypto/ripemd/rmd_locl.h */
+/* crypto/sha/sha_locl.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -56,21 +56,34 @@
  * [including the GNU Public Licence.]
  */
 
-#include "ripemd.h"
+#ifdef undef
+/* one or the other needs to be defined */
+#ifndef SHA_1 /* FIPE 180-1 */
+#define SHA_0 /* FIPS 180   */
+#endif
+#endif
+
+#define ULONG	unsigned long
+#define UCHAR	unsigned char
+#define UINT	unsigned int
+
+#ifdef NOCONST
+#define const
+#endif
 
 #undef c2nl
-#define c2nl(c,l)	(l =(((u_int32_t)(*((c)++)))<<24), \
-			 l|=(((u_int32_t)(*((c)++)))<<16), \
-			 l|=(((u_int32_t)(*((c)++)))<< 8), \
-			 l|=(((u_int32_t)(*((c)++)))    ))
+#define c2nl(c,l)	(l =(((unsigned long)(*((c)++)))<<24), \
+			 l|=(((unsigned long)(*((c)++)))<<16), \
+			 l|=(((unsigned long)(*((c)++)))<< 8), \
+			 l|=(((unsigned long)(*((c)++)))    ))
 
 #undef p_c2nl
 #define p_c2nl(c,l,n)	{ \
 			switch (n) { \
-			case 0: l =((u_int32_t)(*((c)++)))<<24; \
-			case 1: l|=((u_int32_t)(*((c)++)))<<16; \
-			case 2: l|=((u_int32_t)(*((c)++)))<< 8; \
-			case 3: l|=((u_int32_t)(*((c)++))); \
+			case 0: l =((unsigned long)(*((c)++)))<<24; \
+			case 1: l|=((unsigned long)(*((c)++)))<<16; \
+			case 2: l|=((unsigned long)(*((c)++)))<< 8; \
+			case 3: l|=((unsigned long)(*((c)++))); \
 				} \
 			}
 
@@ -80,9 +93,9 @@
 			l=0; \
 			(c)+=n; \
 			switch (n) { \
-			case 3: l =((u_int32_t)(*(--(c))))<< 8; \
-			case 2: l|=((u_int32_t)(*(--(c))))<<16; \
-			case 1: l|=((u_int32_t)(*(--(c))))<<24; \
+			case 3: l =((unsigned long)(*(--(c))))<< 8; \
+			case 2: l|=((unsigned long)(*(--(c))))<<16; \
+			case 1: l|=((unsigned long)(*(--(c))))<<24; \
 				} \
 			}
 
@@ -90,11 +103,11 @@
 #define p_c2nl_p(c,l,sc,len) { \
 			switch (sc) \
 				{ \
-			case 0: l =((u_int32_t)(*((c)++)))<<24; \
+			case 0: l =((unsigned long)(*((c)++)))<<24; \
 				if (--len == 0) break; \
-			case 1: l|=((u_int32_t)(*((c)++)))<<16; \
+			case 1: l|=((unsigned long)(*((c)++)))<<16; \
 				if (--len == 0) break; \
-			case 2: l|=((u_int32_t)(*((c)++)))<< 8; \
+			case 2: l|=((unsigned long)(*((c)++)))<< 8; \
 				} \
 			}
 
@@ -105,18 +118,18 @@
 			 *((c)++)=(unsigned char)(((l)    )&0xff))
 
 #undef c2l
-#define c2l(c,l)	(l =(((u_int32_t)(*((c)++)))    ), \
-			 l|=(((u_int32_t)(*((c)++)))<< 8), \
-			 l|=(((u_int32_t)(*((c)++)))<<16), \
-			 l|=(((u_int32_t)(*((c)++)))<<24))
+#define c2l(c,l)	(l =(((unsigned long)(*((c)++)))    ), \
+			 l|=(((unsigned long)(*((c)++)))<< 8), \
+			 l|=(((unsigned long)(*((c)++)))<<16), \
+			 l|=(((unsigned long)(*((c)++)))<<24))
 
 #undef p_c2l
 #define p_c2l(c,l,n)	{ \
 			switch (n) { \
-			case 0: l =((u_int32_t)(*((c)++))); \
-			case 1: l|=((u_int32_t)(*((c)++)))<< 8; \
-			case 2: l|=((u_int32_t)(*((c)++)))<<16; \
-			case 3: l|=((u_int32_t)(*((c)++)))<<24; \
+			case 0: l =((unsigned long)(*((c)++))); \
+			case 1: l|=((unsigned long)(*((c)++)))<< 8; \
+			case 2: l|=((unsigned long)(*((c)++)))<<16; \
+			case 3: l|=((unsigned long)(*((c)++)))<<24; \
 				} \
 			}
 
@@ -126,9 +139,9 @@
 			l=0; \
 			(c)+=n; \
 			switch (n) { \
-			case 3: l =((u_int32_t)(*(--(c))))<<16; \
-			case 2: l|=((u_int32_t)(*(--(c))))<< 8; \
-			case 1: l|=((u_int32_t)(*(--(c)))); \
+			case 3: l =((unsigned long)(*(--(c))))<<16; \
+			case 2: l|=((unsigned long)(*(--(c))))<< 8; \
+			case 1: l|=((unsigned long)(*(--(c)))); \
 				} \
 			}
 
@@ -136,11 +149,11 @@
 #define p_c2l_p(c,l,sc,len) { \
 			switch (sc) \
 				{ \
-			case 0: l =((u_int32_t)(*((c)++))); \
+			case 0: l =((unsigned long)(*((c)++))); \
 				if (--len == 0) break; \
-			case 1: l|=((u_int32_t)(*((c)++)))<< 8; \
+			case 1: l|=((unsigned long)(*((c)++)))<< 8; \
 				if (--len == 0) break; \
-			case 2: l|=((u_int32_t)(*((c)++)))<<16; \
+			case 2: l|=((unsigned long)(*((c)++)))<<16; \
 				} \
 			}
 
@@ -162,55 +175,69 @@
 /* 5 instructions with rotate instruction, else 9 */
 #define Endian_Reverse32(a) \
 	{ \
-	u_int32_t l=(a); \
+	unsigned long l=(a); \
 	(a)=((ROTATE(l,8)&0x00FF00FF)|(ROTATE(l,24)&0xFF00FF00)); \
 	}
 #else
 /* 6 instructions with rotate instruction, else 8 */
 #define Endian_Reverse32(a) \
 	{ \
-	u_int32_t l=(a); \
+	unsigned long l=(a); \
 	l=(((l&0xFF00FF00)>>8L)|((l&0x00FF00FF)<<8L)); \
 	(a)=ROTATE(l,16L); \
 	}
 #endif
 
-#define F1(x,y,z)	 ((x)^(y)^(z))
-#define F2(x,y,z)	(((x)&(y))|((~x)&z))
-#define F3(x,y,z)	(((x)|(~y))^(z))
-#define F4(x,y,z)	(((x)&(z))|((y)&(~(z))))
-#define F5(x,y,z)	 ((x)^((y)|(~(z))))
+/* As  pointed out by Wei Dai <weidai@eskimo.com>, F() below can be
+ * simplified to the code in F_00_19.  Wei attributes these optimisations
+ * to Peter Gutmann's SHS code, and he attributes it to Rich Schroeppel.
+ * #define F(x,y,z) (((x) & (y))  |  ((~(x)) & (z)))
+ * I've just become aware of another tweak to be made, again from Wei Dai,
+ * in F_40_59, (x&a)|(y&a) -> (x|y)&a
+ */
+#define	F_00_19(b,c,d)	((((c) ^ (d)) & (b)) ^ (d)) 
+#define	F_20_39(b,c,d)	((b) ^ (c) ^ (d))
+#define F_40_59(b,c,d)	(((b) & (c)) | (((b)|(c)) & (d))) 
+#define	F_60_79(b,c,d)	F_20_39(b,c,d)
 
-#define RIPEMD160_A	0x67452301L
-#define RIPEMD160_B	0xEFCDAB89L
-#define RIPEMD160_C	0x98BADCFEL
-#define RIPEMD160_D	0x10325476L
-#define RIPEMD160_E	0xC3D2E1F0L
+#ifdef SHA_0
+#undef Xupdate
+#define Xupdate(a,i,ia,ib,ic,id) X[(i)&0x0f]=(a)=\
+	(ia[(i)&0x0f]^ib[((i)+2)&0x0f]^ic[((i)+8)&0x0f]^id[((i)+13)&0x0f]);
+#endif
+#ifdef SHA_1
+#undef Xupdate
+#define Xupdate(a,i,ia,ib,ic,id) (a)=\
+	(ia[(i)&0x0f]^ib[((i)+2)&0x0f]^ic[((i)+8)&0x0f]^id[((i)+13)&0x0f]);\
+	X[(i)&0x0f]=(a)=ROTATE((a),1);
+#endif
 
-#include "rmdconst.h"
+#define BODY_00_15(i,a,b,c,d,e,f,xa) \
+	(f)=xa[i]+(e)+K_00_19+ROTATE((a),5)+F_00_19((b),(c),(d)); \
+	(b)=ROTATE((b),30);
 
-#define RIP1(a,b,c,d,e,w,s) { \
-	a+=F1(b,c,d)+X[w]; \
-        a=ROTATE(a,s)+e; \
-        c=ROTATE(c,10); }
+#define BODY_16_19(i,a,b,c,d,e,f,xa,xb,xc,xd) \
+	Xupdate(f,i,xa,xb,xc,xd); \
+	(f)+=(e)+K_00_19+ROTATE((a),5)+F_00_19((b),(c),(d)); \
+	(b)=ROTATE((b),30);
 
-#define RIP2(a,b,c,d,e,w,s,K) { \
-	a+=F2(b,c,d)+X[w]+K; \
-        a=ROTATE(a,s)+e; \
-        c=ROTATE(c,10); }
+#define BODY_20_31(i,a,b,c,d,e,f,xa,xb,xc,xd) \
+	Xupdate(f,i,xa,xb,xc,xd); \
+	(f)+=(e)+K_20_39+ROTATE((a),5)+F_20_39((b),(c),(d)); \
+	(b)=ROTATE((b),30);
 
-#define RIP3(a,b,c,d,e,w,s,K) { \
-	a+=F3(b,c,d)+X[w]+K; \
-        a=ROTATE(a,s)+e; \
-        c=ROTATE(c,10); }
+#define BODY_32_39(i,a,b,c,d,e,f,xa) \
+	Xupdate(f,i,xa,xa,xa,xa); \
+	(f)+=(e)+K_20_39+ROTATE((a),5)+F_20_39((b),(c),(d)); \
+	(b)=ROTATE((b),30);
 
-#define RIP4(a,b,c,d,e,w,s,K) { \
-	a+=F4(b,c,d)+X[w]+K; \
-        a=ROTATE(a,s)+e; \
-        c=ROTATE(c,10); }
+#define BODY_40_59(i,a,b,c,d,e,f,xa) \
+	Xupdate(f,i,xa,xa,xa,xa); \
+	(f)+=(e)+K_40_59+ROTATE((a),5)+F_40_59((b),(c),(d)); \
+	(b)=ROTATE((b),30);
 
-#define RIP5(a,b,c,d,e,w,s,K) { \
-	a+=F5(b,c,d)+X[w]+K; \
-        a=ROTATE(a,s)+e; \
-        c=ROTATE(c,10); }
+#define BODY_60_79(i,a,b,c,d,e,f,xa) \
+	Xupdate(f,i,xa,xa,xa,xa); \
+	(f)=X[(i)&0x0f]+(e)+K_60_79+ROTATE((a),5)+F_60_79((b),(c),(d)); \
+	(b)=ROTATE((b),30);
 

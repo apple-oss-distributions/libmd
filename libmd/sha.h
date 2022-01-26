@@ -54,42 +54,46 @@
  * copied and put under another distribution licence
  * [including the GNU Public Licence.]
  *
- * $FreeBSD: src/lib/libmd/sha.h,v 1.5 2006/01/17 15:35:56 phk Exp $
+ * $FreeBSD$
  */
 
 #ifndef _SHA_H_
 #define _SHA_H_		1
 
-#include <sys/cdefs.h>
-#include <sys/types.h>		/* XXX switch to machine/ansi.h and __ types */
-
-#ifdef __APPLE__
-#define COMMON_DIGEST_FOR_OPENSSL
 #include <CommonCrypto/CommonDigest.h>
-#else /* !__APPLE__ */
-#define	SHA_CBLOCK	64
+
+#define	SHA_CBLOCK	CC_SHA1_BLOCK_BYTES
 #define	SHA_LBLOCK	16
 #define	SHA_BLOCK	16
 #define	SHA_LAST_BLOCK  56
 #define	SHA_LENGTH_BLOCK 8
-#define	SHA_DIGEST_LENGTH 20
+#define	SHA_DIGEST_LENGTH CC_SHA1_DIGEST_LENGTH
 
-typedef struct SHAstate_st {
-	u_int32_t h0, h1, h2, h3, h4;
-	u_int32_t Nl, Nh;
-	u_int32_t data[SHA_LBLOCK];
-	int num;
-} SHA_CTX;
-#endif /* __APPLE__ */
-#define	SHA1_CTX	SHA_CTX
+#define SHA_CTX		CC_SHA1_CTX
+#define SHA1_CTX	CC_SHA1_CTX
+
+#include <sys/cdefs.h>
+#include <sys/types.h>
+
+#define SHA1_Init(c)		CC_SHA1_Init(c)
+#define SHA1_Update(c, d, l)	CC_SHA1_Update(c, d, l)
+#define SHA1_Final(c, d)	CC_SHA1_Final(c, d)
 
 __BEGIN_DECLS
-#ifndef __APPLE__
-void	SHA1_Init(SHA_CTX *c);
-void	SHA1_Update(SHA_CTX *c, const void *data, size_t len);
-void	SHA1_Final(unsigned char *md, SHA_CTX *c);
-#endif /* !__APPLE__ */
+int     SHA_Init(SHA_CTX *);
+int     SHA_Update(SHA_CTX *, const void *, size_t);
+int     SHA_Final(unsigned char *md, SHA_CTX *);
+
+char   *SHA_End(SHA_CTX *, char *);
+char   *SHA_Fd(int, char *);
+char   *SHA_FdChunk(int, char *, off_t, off_t);
+char   *SHA_File(const char *, char *);
+char   *SHA_FileChunk(const char *, char *, off_t, off_t);
+char   *SHA_Data(const void *, unsigned int, char *);
+
 char   *SHA1_End(SHA_CTX *, char *);
+char   *SHA1_Fd(int, char *);
+char   *SHA1_FdChunk(int, char *, off_t, off_t);
 char   *SHA1_File(const char *, char *);
 char   *SHA1_FileChunk(const char *, char *, off_t, off_t);
 char   *SHA1_Data(const void *, unsigned int, char *);
